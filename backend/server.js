@@ -12,9 +12,7 @@ const app = express();
 app.use(express.json());
 
 // Enable CORS
-app.use(cors({
-    origin: 'http://localhost:5173' // Chỉ cho phép origin này truy cập
-}));
+app.use(cors());    // Tạm thời cho phép tất cả để dễ deploy
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
@@ -38,6 +36,6 @@ app.use('/api/orders', orderRoutes);
 const authRoutes = require('./routes/auth.route');
 app.use('/api/auth', authRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
