@@ -51,7 +51,7 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
                 price: Number(formData.price),
                 quantity: Number(formData.quantity)
             };
-            const res = await axios.put(`http://localhost:5001/api/products/${product._id}`, updatedData);
+            const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/products/${product._id}`, updatedData);
             onProductUpdated(res.data.data); // Báo cho component cha biết đã cập nhật xong
             onClose(); // Đóng modal
             alert('Cập nhật thành công!');

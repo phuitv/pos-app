@@ -23,7 +23,7 @@ const AddProductForm = ({ onProductAdded }) => {
 
         try {
             // Gửi yêu cầu POST đến API backend để tạo sản phẩm
-            const response = await axios.post('http://localhost:5001/api/products', newProduct);
+            const response = await axios.post('${import.meta.env.VITE_API_URL}/api/products', newProduct);
 
             // Gọi hàm onProductAdded được truyền từ component cha (ProductManagementPage)
             // để thông báo rằng một sản phẩm mới đã được thêm.

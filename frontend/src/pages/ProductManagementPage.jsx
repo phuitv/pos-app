@@ -23,7 +23,7 @@ const ProductManagementPage = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:5001/api/products');
+                const response = await axios.get('${import.meta.env.VITE_API_URL}/api/products');
                 setProducts(response.data.data);
             } catch (error) {
                 console.error("Có lỗi xảy ra khi lấy dữ liệu sản phẩm!", error);
@@ -44,7 +44,7 @@ const ProductManagementPage = () => {
     const handleDelete = async (productId) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
             try {
-                await axios.delete(`http://localhost:5001/api/products/${productId}`);
+                await axios.delete(`${import.meta.env.VITE_API_URL}/api/products/${productId}`);
                 setProducts(products.filter(p => p._id !== productId));
             } catch (error) {
                 console.error('Lỗi khi xóa sản phẩm:', error);

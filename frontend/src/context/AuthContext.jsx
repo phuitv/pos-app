@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
 
                 try {
                     // GỌI API MỚI ĐỂ LẤY THÔNG TIN USER
-                    const res = await axios.get('http://localhost:5001/api/auth/me');
+                    const res = await axios.get('${import.meta.env.VITE_API_URL}/api/auth/me');
                     setUser(res.data.data); // Lưu thông tin user vào state
                     setIsAuthenticated(true);
                 } catch (err) {
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     }, [token]);
 
     const login = async (username, password) => {
-        const res = await axios.post('http://localhost:5001/api/auth/login', { username, password });
+        const res = await axios.post('${import.meta.env.VITE_API_URL}/api/auth/login', { username, password });
         setToken(res.data.token); // Cập nhật state token, useEffect sẽ tự chạy
     };
 
