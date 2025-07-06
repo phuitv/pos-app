@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import AuthContext from '../context/AuthContext';
 
 const Navbar = () => {
-    const { isAuthenticated, logout } = useContext(AuthContext);
+    const { isAuthenticated, logout, user } = useContext(AuthContext);
 
     return (
         <AppBar position="static">
@@ -14,8 +14,16 @@ const Navbar = () => {
                 {isAuthenticated && (
                     <>
                         <Button color="inherit" href="/">Bán hàng</Button>
-                        <Button color="inherit" href="/products">Quản lý Sản phẩm</Button>
-                        <Button color="inherit" href="/orders">Lịch sử Đơn hàng</Button>
+
+                        {/* NẾU LÀ ADMIN, HIỂN THỊ CÁC NÚT QUẢN LÝ */}
+                        {user && user.role === 'admin' && (
+                            <>
+                                <Button color="inherit" href="/products">Quản lý Sản phẩm</Button>
+                                <Button color="inherit" href="/orders">Lịch sử Đơn hàng</Button>
+                                <Button color="inherit" href="/users">Quản lý Người dùng</Button>
+                            </>
+                        )}
+                        
                         <Button color="inherit" onClick={logout}>Đăng xuất</Button>
                     </>
                 )}

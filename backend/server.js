@@ -36,6 +36,9 @@ app.use('/api/orders', orderRoutes);
 const authRoutes = require('./routes/auth.route');
 app.use('/api/auth', authRoutes);
 
+const userRoutes = require('./routes/user.route');
+app.use('/api/users', userRoutes);
+
 const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

@@ -1,12 +1,23 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
-import { Container, Box, TextField, Button, Typography, Paper } from '@mui/material';
+import { Container, Box, TextField, Button, Typography, Paper, IconButton, InputAdornment } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault(); // Ngăn hành vi mặc định khi nhấn giữ chuột
+    };
 
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -52,10 +63,26 @@ const LoginPage = () => {
                         fullWidth
                         name="password"
                         label="Mật khẩu"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}   // type sẽ thay đổi dựa trên state
                         id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        
+                        // Gắn icon vào cuối ô input
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                     {error && (
                         <Typography color="error" variant="body2" sx={{ mt: 2 }}>

@@ -3,9 +3,11 @@ import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import PosPage from './pages/PosPage';
 import ProductManagementPage from './pages/ProductManagementPage';
+import UserManagementPage from './pages/UserManagementPage';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
 
 function App() {
   return (
@@ -13,8 +15,13 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          {/* Public Route */}
-          <Route path="/login" element={<LoginPage />} />
+          {/* Public Route - được bảo vệ bởi PublicRoute */}
+          <Route path="/login" element={
+            // Bọc LoginPage trong PublicRoute
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          } />
 
           {/* Protected Routes */}
           <Route path="/" element={
@@ -30,6 +37,11 @@ function App() {
           <Route path="/orders" element={
             <ProtectedRoute>
               <OrderHistoryPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/users" element={
+            <ProtectedRoute>
+              <UserManagementPage />
             </ProtectedRoute>
           } />
           

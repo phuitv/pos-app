@@ -8,7 +8,7 @@ const OrderHistoryPage = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const { data } = await axios.get('${import.meta.env.VITE_API_URL}/api/orders');
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/orders`);
                 setOrders(data.data);
             } catch (error) {
                 console.error("Không thể lấy lịch sử đơn hàng:", error);

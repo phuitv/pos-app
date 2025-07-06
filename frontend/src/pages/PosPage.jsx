@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, Paper } from '@mui/material';
-import { List, ListItem, ListItemText, TextField, Divider, Button, Box } from '@mui/material';
+import { Container, Grid, Typography, Paper, List, ListItem, ListItemText, TextField, Divider, Button, Box, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
 
 const PosPage = () => {
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([]); // State để lưu giỏ hàng
+    const [loading, setLoading] = useState(false);  // state để xử lý trạng thái loading khi đang thanh toán
 
     const addProductToCart = (product) => {
-        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-        const existingProduct = cart.find(item => item._id === product._id);
+        const existingProduct = cart.find(item => item._id === product._id);    // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
 
         if (existingProduct) {
             // Nếu đã có, chỉ tăng số lượng
@@ -48,9 +46,6 @@ const PosPage = () => {
         return cart.reduce((total, item) => total + item.price * item.quantity, 0);
     };
 
-    // Thêm một state để xử lý trạng thái loading khi đang thanh toán
-    const [loading, setLoading] = useState(false);
-
     const handlePayment = async () => {
         if (cart.length === 0) return;
 
@@ -68,7 +63,7 @@ const PosPage = () => {
         };
 
         try {
-            await axios.post('${import.meta.env.VITE_API_URL}/api/orders', orderData);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/orders`, orderData);
             alert('Tạo đơn hàng thành công!');
             setCart([]); // Xóa giỏ hàng sau khi thành công
         } catch (error) {
@@ -83,8 +78,10 @@ const PosPage = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get('${import.meta.env.VITE_API_URL}/api/products');
-                setProducts(data.data);
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/products`);
+                // Nếu data.data tồn tại và là một mảng, dùng nó.
+                // Nếu không, hãy dùng một mảng rỗng [].
+                setProducts(data.data || []);
             } catch (error) {
                 console.error("Không thể lấy danh sách sản phẩm:", error);
             }
@@ -96,17 +93,17 @@ const PosPage = () => {
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>    {/* spacing={3} tạo khoảng cách giữa các cột */}
                 {/* Cột Trái: Danh sách sản phẩm */}
-                <Grid item xs={12} md={7}>  {/* xs={12} nghĩa là trên màn hình rất nhỏ (extra small), nó chiếm 12/12 cột (toàn bộ chiều rộng). md={7} nghĩa là trên màn hình trung bình (medium) trở lên, nó chiếm 7/12 cột. Đây chính là cách làm responsive của MUI */}
-                    <Paper sx={{ p: 2 }}>
+                <Grid container xs={12} md={7}>  {/* xs={12} nghĩa là trên màn hình rất nhỏ (extra small), nó chiếm 12/12 cột (toàn bộ chiều rộng). md={7} nghĩa là trên màn hình trung bình (medium) trở lên, nó chiếm 7/12 cột. Đây chính là cách làm responsive của MUI */}
+                    <Paper sx={{ p: 2, width: '100%' }}>
                         <Typography variant="h6" gutterBottom>
                             Sản phẩm
                         </Typography>
                         <Grid container spacing={2}>
                             {products.map((product) => (
-                                <Grid item xs={6} sm={4} md={3} key={product._id}>
+                                <Grid container xs={6} sm={4} md={3} key={product._id}>
                                     <Paper 
                                         onClick={() => addProductToCart(product)}
-                                        sx={{ p: 2, textAlign: 'center', cursor: 'pointer', '&:hover': { backgroundColor: '#f0f0f0' } }}
+                                        sx={{ p: 2, textAlign: 'center', cursor: 'pointer', '&:hover': { backgroundColor: '#f0f0f0' }, width: '100%' }}
                                     >
                                         <Typography variant="subtitle1" noWrap>{product.name}</Typography>
                                         <Typography variant="body2" color="text.secondary">
@@ -120,8 +117,8 @@ const PosPage = () => {
                 </Grid>
 
                 {/* Cột Phải: Giỏ hàng */}
-                <Grid item xs={12} md={5}>
-                    <Paper sx={{ p: 2 }}>
+                <Grid container xs={12} md={5}>
+                    <Paper sx={{ p: 2, width: '100%' }}>
                         <Typography variant="h6" gutterBottom>
                             Hóa đơn
                         </Typography>
@@ -137,7 +134,9 @@ const PosPage = () => {
                                         value={item.quantity}
                                         onChange={(e) => updateQuantity(item._id, parseInt(e.target.value, 10))}
                                         sx={{ width: '60px', mx: 2 }}
-                                        inputProps={{ min: 1 }}
+                                        slotProps={{ 
+                                            input: { min: 1 }
+                                        }}
                                     />
                                     <IconButton edge="end" aria-label="delete" onClick={() => removeFromCart(item._id)}>
                                         <DeleteIcon />
