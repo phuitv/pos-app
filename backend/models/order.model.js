@@ -21,7 +21,17 @@ const OrderSchema = new mongoose.Schema({
         required: true,
         default: 0.0
     },
-    // Các thông tin khác có thể thêm sau: customer, paymentMethod...
+    store: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Store',
+        required: true
+    },
+    // thêm trường 'user' để biết nhân viên nào đã tạo đơn hàng
+    user: { 
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required: true
+    }
 }, {
     timestamps: true // Tự động thêm createdAt, updatedAt
 });

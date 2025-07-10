@@ -19,6 +19,11 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'Please add a quantity'],
         default: 0 // Giá trị mặc định nếu không cung cấp
+    },
+    store: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Store',
+        required: true
     }
 }, {
     timestamps: true // Tự động thêm 2 trường: createdAt (thời gian tạo) và updatedAt (cập nhật lần cuối)

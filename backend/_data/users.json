@@ -1,0 +1,20 @@
+[
+  {
+    "username": "admin_tch",
+    "password": "password123",
+    "role": "admin",
+    "store": "60d5ec49f72e3d3b3c3b3c3b"
+  },
+  {
+    "username": "staff_tch_01",
+    "password": "password123",
+    "role": "staff",
+    "store": "60d5ec49f72e3d3b3c3b3c3b"
+  },
+  {
+    "username": "admin_hm",
+    "password": "password123",
+    "role": "admin",
+    "store": "60d5ec49f72e3d3b3c3b3c3c"
+  }
+]

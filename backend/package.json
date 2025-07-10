@@ -5,8 +5,8 @@
   "scripts": {
     "start": "node server.js",
     "server": "nodemon server.js",
-    "import-data": "node _data/seeder.js --import",
-    "delete-data": "node _data/seeder.js --delete"
+    "data:import": "node _data/seeder.js -i",
+    "data:destroy": "node _data/seeder.js -d"
   },
   "keywords": [],
   "author": "",

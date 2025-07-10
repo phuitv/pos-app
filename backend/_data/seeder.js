@@ -3,36 +3,29 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 // Load env vars
-dotenv.config({ path: '../.env' }); // Chỉ định đường dẫn đến file .env ở thư mục backend
+dotenv.config({ path: './.env' }); // Chỉ định đường dẫn đến file .env ở thư mục backend
 
 // Load models
 const User = require('../models/user.model');
+const Store = require('../models/store.model');
+const Product = require('../models/product.model');
+const Order = require('../models/order.model'); // Thêm Order nếu bạn muốn seed cả đơn hàng
 
 // Connect to DB
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+mongoose.connect(process.env.MONGO_URI);
 
-// Thêm Dữ liệu người dùng
-const users = [
-    {
-        username: 'superadmin',
-        password: 'superpassword123',
-        role: 'admin'
-    },
-    {
-        username: 'nhanvien01',
-        password: 'password123',
-        role: 'staff'
-    }
-];
+// Read JSON files
+const stores = JSON.parse(fs.readFileSync(`${__dirname}/stores.json`, 'utf-8'));
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
+const products = JSON.parse(fs.readFileSync(`${__dirname}/products.json`, 'utf-8'));
 
 // Import data into DB
 const importData = async () => {
     try {
-        await User.create(users);
-        console.log('SUCCESS: Data Imported...');
+        await Store.create(stores);
+        await User.create(users); // Model sẽ tự động băm mật khẩu
+        await Product.create(products);
+        console.log('SUCCESS: Data Imported!');
         process.exit();
     } catch (err) {
         console.error(err);
@@ -43,8 +36,11 @@ const importData = async () => {
 // Delete data from DB
 const deleteData = async () => {
     try {
+        await Store.deleteMany();
         await User.deleteMany();
-        console.log('SUCCESS: Data Destroyed...');
+        await Product.deleteMany();
+        await Order.deleteMany();
+        console.log('SUCCESS: Data Destroyed!');
         process.exit();
     } catch (err) {
         console.error(err);

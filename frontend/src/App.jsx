@@ -8,6 +8,7 @@ import OrderHistoryPage from './pages/OrderHistoryPage';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
+import StoreSettingsPage from './pages/StoreSettingsPage';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
               <UserManagementPage />
             </ProtectedRoute>
           } />
+          <Route path="/settings" element={<ProtectedRoute><StoreSettingsPage /></ProtectedRoute>} />
           
           {/* Có thể thêm route 404 ở đây */}
         </Routes>

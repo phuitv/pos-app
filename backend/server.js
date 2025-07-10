@@ -2,6 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const userRoutes = require('./routes/user.route');
+app.use('/api/users', userRoutes);
+
+// Trang cài đặt cửa hàng
+const storeRoutes = require('./routes/store.route');
+app.use('/api/stores', storeRoutes);
 
 // Load env vars
 dotenv.config();

@@ -14,7 +14,9 @@ exports.createOrder = async (req, res, next) => {
         // Bước 1: Tạo đơn hàng
         const order = await Order.create({
             orderItems,
-            totalAmount
+            totalAmount,
+            store: req.storeId,    // Gán storeId của user
+            user: req.user.id      // Gán userId của user
         });
 
         // Bước 2: Cập nhật số lượng tồn kho cho từng sản phẩm
@@ -41,7 +43,7 @@ exports.createOrder = async (req, res, next) => {
 // @route   GET /api/orders
 exports.getOrders = async (req, res, next) => {
     try {
-        const orders = await Order.find().sort({ createdAt: -1 }); // Sắp xếp đơn mới nhất lên đầu
+        const orders = await Order.find({ store: req.storeId }).sort({ createdAt: -1 }); // Sắp xếp đơn mới nhất lên đầu
         res.status(200).json({
             success: true,
             count: orders.length,

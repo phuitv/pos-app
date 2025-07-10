@@ -17,6 +17,11 @@ const UserSchema = new mongoose.Schema({
         type: String,
         enum: ['staff', 'admin'], // Chỉ cho phép 1 trong 2 giá trị này
         default: 'staff'
+    },
+    store: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Store',
+        required: true
     }
 });
 
