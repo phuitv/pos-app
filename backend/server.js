@@ -2,12 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const userRoutes = require('./routes/user.route');
-app.use('/api/users', userRoutes);
-
-// Trang cài đặt cửa hàng
-const storeRoutes = require('./routes/store.route');
-app.use('/api/stores', storeRoutes);
 
 // Load env vars
 dotenv.config();
@@ -44,6 +38,9 @@ app.use('/api/auth', authRoutes);
 
 const userRoutes = require('./routes/user.route');
 app.use('/api/users', userRoutes);
+
+const storeRoutes = require('./routes/store.route');
+app.use('/api/stores', storeRoutes);
 
 const PORT = process.env.PORT || 5001;
 
