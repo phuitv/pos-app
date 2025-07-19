@@ -3,6 +3,7 @@
     "name": "Cà Phê Sữa Đá",
     "sku": "TCH-CFS",
     "price": 35000,
+    "costPrice": 15000,
     "quantity": 100,
     "store": "60d5ec49f72e3d3b3c3b3c3b"
   },
@@ -10,6 +11,7 @@
     "name": "Trà Đào Cam Sả",
     "sku": "TCH-TDCS",
     "price": 55000,
+    "costPrice": 15000,
     "quantity": 50,
     "store": "60d5ec49f72e3d3b3c3b3c3b"
   },
@@ -17,6 +19,7 @@
     "name": "Áo Thun Trơn",
     "sku": "HM-TSHIRT",
     "price": 299000,
+    "costPrice": 15000,
     "quantity": 200,
     "store": "60d5ec49f72e3d3b3c3b3c3c"
   }

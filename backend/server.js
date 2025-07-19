@@ -42,6 +42,12 @@ app.use('/api/users', userRoutes);
 const storeRoutes = require('./routes/store.route');
 app.use('/api/stores', storeRoutes);
 
+const customerRoutes = require('./routes/customer.route');
+app.use('/api/customers', customerRoutes);
+
+const ingredientRoutes = require('./routes/ingredient.route');
+app.use('/api/ingredients', ingredientRoutes);
+
 const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

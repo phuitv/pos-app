@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
 
 const OrderHistoryPage = () => {
     const [orders, setOrders] = useState([]);
@@ -30,6 +30,7 @@ const OrderHistoryPage = () => {
                             <TableCell>Ngày tạo</TableCell>
                             <TableCell>Chi tiết</TableCell>
                             <TableCell align="right">Tổng tiền</TableCell>
+                            <TableCell align="center">Trạng thái</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -44,6 +45,13 @@ const OrderHistoryPage = () => {
                                 </TableCell>
                                 <TableCell align="right">
                                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount)}
+                                </TableCell>
+                                <TableCell align="center">
+                                    <Chip
+                                        label={order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Ghi nợ'}
+                                        color={order.paymentStatus === 'paid' ? 'success' : 'warning'}
+                                        size="small"
+                                    />
                                 </TableCell>
                             </TableRow>
                         ))}

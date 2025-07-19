@@ -16,7 +16,15 @@ const StoreSchema = new mongoose.Schema({
         type: String,
         default: 'Chưa cập nhật'
     },
-    // Thêm các thông tin khác bạn muốn cửa hàng có ở đây
+    businessType: {
+        type: String,
+        enum: ['food_and_beverage', 'retail', 'service'],
+        // Không required ở đây, sẽ bắt buộc ở logic sau
+    },
+    isSetupCompleted: {
+        type: Boolean,
+        default: false // Mặc định là chưa hoàn tất
+    }
 }, {
     timestamps: true
 });

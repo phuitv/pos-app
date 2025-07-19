@@ -50,8 +50,8 @@ exports.login = async (req, res, next) => {
 // @route   GET /api/auth/me
 // @access  Private
 exports.getMe = async (req, res, next) => {
-    // req.user được gán từ middleware 'protect'
-    const user = await User.findById(req.user.id);
+    // Sử dụng .populate('store') để lấy thông tin chi tiết của cửa hàng
+    const user = await User.findById(req.user.id).populate('store');
 
     res.status(200).json({
         success: true,

@@ -14,8 +14,8 @@ exports.protect = async (req, res, next) => {
     }
 
     try {
-        // Giải mã token để lấy payload (chứa id và store)
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);  // Giải mã token để lấy payload (chứa id và store)
+        console.log('Decoded token payload:', decoded); // In payload ra
 
         // Gắn thông tin vào đối tượng req để các controller sau có thể dùng
         req.user = await User.findById(decoded.id);
@@ -24,6 +24,8 @@ exports.protect = async (req, res, next) => {
         if (!req.user || !req.storeId) {
             return res.status(401).json({ success: false, error: 'User hoặc Store không tồn tại' });
         }
+
+        console.log('Attached to request:', { userId: req.user._id, storeId: req.storeId }); // In ra thông tin đã gán
 
         next(); // Cho phép đi tiếp
     } catch (err) {
