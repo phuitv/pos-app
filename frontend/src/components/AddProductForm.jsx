@@ -1,36 +1,28 @@
 import React, { useState, useEffect , useContext } from 'react';
 import axios from 'axios';
 import { TextField, Button, Box, Paper, Typography, CircularProgress,
-    FormControlLabel, Switch, Autocomplete, Chip, List, ListItem, ListItemText, IconButton,
+    FormControlLabel, Switch, Autocomplete, List, ListItem, ListItemText, IconButton,
     Divider
  } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AuthContext from '../context/AuthContext'; // Import context
+import AuthContext from '../context/AuthContext';
 
-const AddProductForm = ({ onProductAdded, onCancel }) => {
-    const { user } = useContext(AuthContext); // Lấy thông tin user (chứa store)
-    
+const AddProductForm = ({ onProductAdded, onCancel, setNotification }) => {
     const [formData, setFormData] = useState({
         name: '', sku: '', costPrice: '', price: '',
-        // Giá trị mặc định của trackQuantity giờ phụ thuộc vào loại hình kinh doanh
-        trackQuantity: user?.store?.businessType === 'retail',
-        quantity: ''
+        trackQuantity: true, quantity: ''
     });
     const [loading, setLoading] = useState(false);
-
     const [ingredients, setIngredients] = useState([]); // Danh sách NVL để chọn
-    const [recipeItems, setRecipeItems] = useState([]); // Công thức đang xây dựng
+    const [recipeItems, setRecipeItems] = useState([]); // Công thức tính NVL
     const [selectedIngredient, setSelectedIngredient] = useState(null); // NVL đang được chọn trong Autocomplete
     const [ingredientAmount, setIngredientAmount] = useState(1);    // Số lượng NVL đang nhập
 
-    // Xác định xem có nên quản lý tồn kho không
-    const shouldTrackQuantity = user?.store?.businessType === 'retail';
-
-    // Fetch danh sách nguyên vật liệu khi component được tải
+    // Fetch danh sách NVL Nếu công tắc "Quản lý tồn kho" bị tắt
     useEffect(() => {
         // Chỉ fetch NVL nếu là cửa hàng dịch vụ
-        if (!shouldTrackQuantity) {
+        if (!formData.trackQuantity) {
             const fetchIngredients = async () => {
                 try {
                     const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/ingredients`);
@@ -41,7 +33,7 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
             };
             fetchIngredients();
         }
-    }, [shouldTrackQuantity]);  // Chạy lại nếu loại hình kinh doanh thay đổi
+    }, [formData.trackQuantity]);  // Chạy lại nếu công tắc thay đổi
 
     // === CÁC HÀM XỬ LÝ ===
     const handleChange = (e) => {
@@ -96,14 +88,14 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
         const newProduct = {
             name: formData.name,
             sku: formData.sku,
-            price: Number(formData.price), // Chuyển giá trị price sang kiểu Number
-            // Chỉ gửi costPrice và quantity nếu là sản phẩm bán lẻ
-            ...(shouldTrackQuantity && {
+            price: Number(formData.price),
+            trackQuantity: formData.trackQuantity,
+            recipe: recipeForApi,
+            // Nếu công tắc bật, gửi giá trị từ form. Nếu không, không gửi gì cả.
+            ...(formData.trackQuantity && {
                 costPrice: Number(formData.costPrice),
                 quantity: Number(formData.quantity)
-            }),
-            trackQuantity: formData.trackQuantity,
-            recipe: recipeForApi
+            })
         };
 
         try {
@@ -112,22 +104,21 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
                 `${import.meta.env.VITE_API_URL}/api/products`, newProduct
             );
 
-            // Gọi hàm onProductAdded được truyền từ component cha (ProductManagementPage)
-            // để thông báo rằng một sản phẩm mới đã được thêm.
-            // và truyền dữ liệu sản phẩm mới nhận được từ API.
+            // Gọi hàm onProductAdded và truyền dữ liệu sản phẩm mới nhận được từ API.
             onProductAdded(response.data.data);
 
-            // 2. XÓA TRỐNG FORM để sẵn sàng cho lần nhập tiếp theo
+            // XÓA TRỐNG FORM
             setFormData({
                 name: '', sku: '', costPrice: '', price: '', quantity: '',
-                trackQuantity: shouldTrackQuantity
+                trackQuantity: true
             });
-            setRecipeItems([]);
+            setRecipeItems([]); // Xóa công thức tạm
 
         } catch (error) {
             console.error('Lỗi khi thêm sản phẩm:', error);
+            const errorMessage = error.response?.data?.error || error.message;
             // Hiển thị một thông báo lỗi cụ thể hơn nếu có thể
-            alert('Có lỗi xảy ra: ' + (error.response?.data?.error || error.message));
+            setNotification({ open: true, message: `Lỗi: ${errorMessage}`, severity: 'error' });
         } finally {
             setLoading(false);
         }
@@ -141,41 +132,43 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
                     onChange={handleChange} fullWidth required margin="normal" />
                 <TextField name="sku" label="Mã SKU (để trống sẽ tự tạo)" value={formData.sku} 
                     onChange={handleChange} fullWidth margin="normal" />
-                <TextField name="costPrice" label="Giá nhập" type="number" value={formData.costPrice} 
-                    onChange={handleChange} fullWidth required margin="normal" />
                 <TextField name="price" label="Giá bán" type="number" value={formData.price} 
                     onChange={handleChange} fullWidth required margin="normal" />
                 
-                {/* --- GIAO DIỆN CÓ ĐIỀU KIỆN DỰA TRÊN LOẠI HÌNH KINH DOANH --- */}
-                {shouldTrackQuantity ? (
-                    // Giao diện cho cửa hàng BÁN LẺ
-                    <>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={formData.trackQuantity}
-                                    onChange={handleChange}
-                                    name="trackQuantity"
-                                />
-                            }
-                            label="Quản lý tồn kho"
-                            sx={{ mt: 1, display: 'block' }}
+                {/* --- LUÔN HIỂN THỊ CÔNG TẮC QUẢN LÝ TỒN KHO --- */}
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={formData.trackQuantity}
+                            onChange={handleChange}
+                            name="trackQuantity"
                         />
-                        {formData.trackQuantity && (
-                            <TextField name="quantity" label="Số lượng *" type="number" 
-                                value={formData.quantity} onChange={handleChange} fullWidth 
-                                required={formData.trackQuantity} margin="normal" 
-                            />
-                        )}
-                        <TextField name="costPrice" label="Giá nhập *" type="number" 
+                    }
+                    label="Quản lý tồn kho (hàng bán sẵn)"
+                    sx={{ mt: 1, display: 'block' }}
+                />
+
+                {/* --- GIAO DIỆN CÓ ĐIỀU KIỆN --- */}
+                {formData.trackQuantity ? (
+                    // Nếu công tắc BẬT (hàng bán sẵn)
+                    <>
+                        <TextField 
+                            name="quantity" label="Số lượng *" type="number" 
+                            value={formData.quantity} onChange={handleChange} fullWidth 
+                            required margin="normal" 
+                        />
+                        <TextField 
+                            name="costPrice" label="Giá nhập *" type="number" 
                             value={formData.costPrice} onChange={handleChange} fullWidth 
                             required margin="normal" 
                         />
                     </>
                 ) : (
-                    // Giao diện cho cửa hàng DỊCH VỤ / ĂN UỐNG
+                    // Nếu công tắc TẮT (hàng pha chế/dịch vụ)
                     <Box sx={{ mt: 2, p: 2, border: '1px dashed grey', borderRadius: 1 }}>
-                        <Typography variant="subtitle1" gutterBottom>Xây dựng Công thức</Typography>
+                        <Typography variant="subtitle1" gutterBottom>
+                            Xây dựng Công thức (Giá vốn sẽ được tính tự động)
+                        </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
                             <Autocomplete
                                 options={ingredients}
@@ -198,21 +191,25 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
                             </IconButton>
                         </Box>
                         <List dense>
-                            {recipeItems.map(item => (
-                                <ListItem
-                                    key={item.ingredient._id}
-                                    secondaryAction={
-                                        <IconButton edge="end" size="small" onClick={() => handleRemoveRecipeItem(item.ingredient._id)}>
-                                            <DeleteIcon fontSize="small" />
-                                        </IconButton>
-                                    }
-                                >
-                                    <ListItemText 
-                                        primary={item.ingredient.name}
-                                        secondary={`${item.amount} ${item.ingredient.unit}`}
-                                    />
-                                </ListItem>
-                            ))}
+                            {recipeItems.map(item => {
+                                // Tìm thông tin đầy đủ của ingredient
+                                const ingredientInfo = ingredients.find(i => i._id === (item.ingredient._id || item.ingredient));
+                                return (
+                                    <ListItem
+                                        key={item.ingredient._id || item.ingredient}
+                                        secondaryAction={
+                                            <IconButton edge="end" size="small" onClick={() => handleRemoveRecipeItem(item.ingredient._id || item.ingredient)}>
+                                                <DeleteIcon fontSize="small" />
+                                            </IconButton>
+                                        }
+                                    >
+                                        <ListItemText 
+                                            primary={ingredientInfo?.name || 'Đang tải...'}
+                                            secondary={`${item.amount} ${ingredientInfo?.unit || ''}`}
+                                        />
+                                    </ListItem>
+                                );
+                            })}
                         </List>
                         {recipeItems.length > 0 && <Divider />}
                     </Box>

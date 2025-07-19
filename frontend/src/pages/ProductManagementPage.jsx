@@ -18,7 +18,7 @@ import EditIcon from '@mui/icons-material/Edit';   // Icon cho nút sửa
 import AddProductForm from '../components/AddProductForm';
 import EditProductModal from '../components/EditProductModal';
 
-const ProductManagementPage = () => {
+const ProductManagementPage = ( setNotification ) => {
     const { user } = useContext(AuthContext); // Lấy user từ context
     const [products, setProducts] = useState([]);
     const [editingProduct, setEditingProduct] = useState(null);
@@ -81,7 +81,13 @@ const ProductManagementPage = () => {
             </Box>
 
             {/* Chỉ hiển thị form nếu nút được bấm VÀ user là admin */}
-            {user && user.role === 'admin' && showAddForm && <AddProductForm onProductAdded={handleProductAdded} />}
+            {user && user.role === 'admin' && showAddForm && (
+                <AddProductForm
+                    onProductAdded={handleProductAdded} 
+                    onCancel={() => setShowAddForm(false)}
+                    setNotification={setNotification}
+                />
+            )}
 
             <EditProductModal 
                 product={editingProduct} 
