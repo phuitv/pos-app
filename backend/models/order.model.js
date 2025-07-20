@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { nanoid } = require('nanoid');
 
 const OrderSchema = new mongoose.Schema({
     // Mảng chứa các sản phẩm trong đơn hàng
@@ -15,6 +16,13 @@ const OrderSchema = new mongoose.Schema({
             }
         }
     ],
+
+    orderCode: {
+        type: String,
+        unique: true,
+        // Tự động tạo mã 8 ký tự khi một đơn hàng mới được tạo
+        default: () => `HD-${nanoid(8).toUpperCase()}` 
+    },
 
     // Tổng giá trị đơn hàng
     totalAmount: {

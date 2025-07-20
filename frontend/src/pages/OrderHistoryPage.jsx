@@ -35,8 +35,8 @@ const OrderHistoryPage = () => {
                     </TableHead>
                     <TableBody>
                         {orders.map((order) => (
-                            <TableRow key={order._id}>
-                                <TableCell>{order._id}</TableCell>
+                            <TableRow key={order.orderCode}>
+                                <TableCell>{order.orderCode}</TableCell>
                                 <TableCell>{new Date(order.createdAt).toLocaleString('vi-VN')}</TableCell>
                                 <TableCell>
                                     {order.orderItems.map(item => (
