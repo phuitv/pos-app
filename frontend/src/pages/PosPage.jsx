@@ -16,7 +16,7 @@ const normalizeString = (str) => {
         .replace(/đ/g, "d"); // 4. Thay thế 'đ' thành 'd'
 };
 
-const PosPage = () => {
+const PosPage = ({ setNotification }) => {
     // === KHAI BÁO STATE ===
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([]); // State để lưu giỏ hàng
@@ -35,6 +35,7 @@ const PosPage = () => {
         phone: '',
         address: ''
     });
+    const [autocompleteKey, setAutocompleteKey] = useState(Date.now());
     
     // === CÁC HÀM FETCH DỮ LIỆU ===
     // Lấy danh sách sản phẩm từ API khi component được tải
@@ -65,23 +66,6 @@ const PosPage = () => {
         fetchProducts();
         fetchCustomers();
     }, []);
-
-    useEffect(() => {
-        // Tìm khách hàng tương ứng với dữ liệu trong form hiện tại
-        // (Dựa trên tên và số điện thoại, vì _id có thể chưa có lúc tạo mới)
-        const currentCustomerInList = customers.find(c => 
-            c.name === customerFormData.name && c.phone === customerFormData.phone
-        );
-
-        // Nếu tìm thấy khách hàng đó trong danh sách mới (nghĩa là nó vừa được tạo hoặc cập nhật)
-        if (currentCustomerInList) {
-            // Cập nhật lại form data với dữ liệu đầy đủ từ danh sách (để chắc chắn có _id)
-            setCustomerFormData(currentCustomerInList);
-            // Buộc Autocomplete phải reset
-            setAutocompleteKey(Date.now());
-        }
-
-    }, [customers]); // Dependency array: chỉ chạy khi `customers` thay đổi.
 
     useEffect(() => {
         const fetchStoreInfo = async () => {
@@ -123,12 +107,22 @@ const PosPage = () => {
         const method = isUpdating ? 'put' : 'post';
         
         try {
-            await axios[method](url, customerFormData);
+            const { data } = await axios[method](url, customerFormData);
+            const savedCustomer = data.data;
             
             setNotification({ open: true, message: 'Thao tác với khách hàng thành công!', severity: 'success' });
-            
-            fetchCustomers();
-            
+
+            // --- LOGIC CẬP NHẬT STATE THỦ CÔNG ---
+            // if (isUpdating) {
+            //     setCustomers(prev => prev.map(c => c._id === savedCustomer._id ? savedCustomer : c));
+            // } else {
+            //     setCustomers(prev => [savedCustomer, ...prev]);
+            // }
+
+            await fetchCustomers();
+
+            setCustomerFormData(savedCustomer);
+            setAutocompleteKey(Date.now());
         } catch (error) {
             const errorMessage = error.response?.data?.error || error.message;
             setNotification({ open: true, message: `Lỗi: ${errorMessage}`, severity: 'error' });

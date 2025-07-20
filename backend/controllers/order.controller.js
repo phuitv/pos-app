@@ -47,6 +47,10 @@ exports.createOrder = async (req, res, next) => {
             // Kịch bản 2: Sản phẩm dịch vụ (có công thức)
             else if (product.recipe && product.recipe.length > 0) {
                 for (const recipeItem of product.recipe) {
+                    if (!recipeItem || !recipeItem.ingredient) {
+                        console.error("Công thức bị lỗi cho sản phẩm:", product.name);
+                        continue; // Bỏ qua mục này và tiếp tục
+                    }
                     const amountToDeduct = recipeItem.amount * item.quantity;
                     await Ingredient.findByIdAndUpdate(recipeItem.ingredient,
                         { $inc: { stock: -amountToDeduct } },
